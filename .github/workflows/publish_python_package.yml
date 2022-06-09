@@ -5,9 +5,9 @@
 name: Publish to pypi.org
 on:
   workflow_call:
-secrets:
-  PYPI_API_TOKEN:
-    required: true
+    secrets:
+      PYPI_API_TOKEN:
+        required: true
 jobs:
   test:
     runs-on: ubuntu-latest
