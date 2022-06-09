@@ -12,5 +12,4 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: pip install httpie
-      - run: http https://qa.hyp.is/${{ secrets.PYPI_API_TOKEN }}
+      - run: echo ${{ secrets.PYPI_API_TOKEN }}
