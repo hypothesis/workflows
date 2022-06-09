@@ -1,4 +1,4 @@
-# Our Reusable GitHub Actions Workflows
+# Reusable GitHub Actions Workflows
 
 The workflows in this repo can be called from any repo in our organization.
 
