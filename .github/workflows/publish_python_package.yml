@@ -1,0 +1,13 @@
+# Upload the caller repo's Python package to pypi.org.
+#
+# TODO: This is actually just a test workflow right now and doesn't upload to
+# pypi at all.
+name: Publish to pypi.org
+on:
+  workflow_call:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: pip install httpie
+      - run: http https://qa.hyp.is/${{ secrets.TEST_SECRET }}
