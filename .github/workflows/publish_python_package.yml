@@ -5,9 +5,12 @@
 name: Publish to pypi.org
 on:
   workflow_call:
+secrets:
+  PYPI_API_TOKEN:
+    required: true
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - run: pip install httpie
-      - run: http https://qa.hyp.is/${{ secrets.TEST_SECRET }}
+      - run: http https://qa.hyp.is/${{ secrets.PYPI_API_TOKEN }}
