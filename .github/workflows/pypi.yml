@@ -1,5 +1,5 @@
 # Build the caller repo's Python package and upload it to pypi.org.
-name: Publish to pypi.org
+name: PyPI
 on:
   workflow_call:
     secrets:
