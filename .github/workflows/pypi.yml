@@ -6,7 +6,7 @@ on:
       PYPI_TOKEN:
         required: true
 jobs:
-  pypi:
+  PyPI:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
