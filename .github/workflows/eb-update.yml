@@ -1,0 +1,67 @@
+# Manages AWS Elastic Beanstalk updates.
+name: eb-update
+
+on:
+  workflow_call:
+    inputs:
+      Application:
+        type: string
+        required: true
+        description: "The Elastic Beanstalk application to target"
+      Environment:
+        type: string
+        required: true
+        description: "The environment to target. Can be either: 'qa' or 'prod'."
+      Region:
+        type: string
+        required: true
+        description: "The AWS region to target. Can be either: 'us-west-1', or 'ca-central-1', or 'all'."
+      Version:
+        type: string
+        description: "The tag of the application docker image to deploy. This is required if the selected deployment type is `deploy`."
+      Operation:
+        type: string
+        required: true
+        description: "`redeploy` triggers a redeployment of the currently deployed version. `deploy` releases and deploys a specific application version. `sync-env` synchronizes the environment definition."
+    secrets:
+      DEPLOYMENT_AWS_ROLE_ARN:
+        required: true
+        description: "The ARN for the AWS IAM role configured for use with GitHub Deployments."
+      DEPLOYMENT_REPOSITORY:
+        required: true
+        description: "The GitHub repository containing Elastic Beanstalk environment definitions."
+      DEPLOYMENT_REPOSITORY_KEY:
+        required: true
+        description: "The access key for the respository defined by DEPLOYMENT_REPOSITORY."
+
+permissions:
+  id-token: write # required to use AWS OIDC auth
+
+env:
+  APP: ${{ inputs.Application }}
+  ENV: ${{ inputs.Environment }}
+  REGION: ${{ inputs.Region }}
+  APP_DOCKER_VERSION: ${{ inputs.Version }}
+  TYPE: ${{ inputs.Operation }}
+
+jobs:
+  eb-update:
+    name: ${{ inputs.Operation }}:${{ inputs.Environment }}:${{ inputs.Region }}
+    environment: ${{ inputs.Environment }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
+        role-duration-seconds: 900
+        aws-region: us-west-1
+    - name: Checkout deployment repo
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
+        ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
+    - name: Prepare environment
+      run: pip install boto3 pyaml
+    - name: ${{ inputs.Application }} - ${{ inputs.Environment }} - ${{ inputs.Region }} - ${{ inputs.Operation }}
+      run: ./bin/init.sh
