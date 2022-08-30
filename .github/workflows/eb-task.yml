@@ -1,0 +1,86 @@
+# Manages the process of running a command inside the Docker container
+# of a running Elastic Beanstalk application.
+#
+name: eb-task
+
+on:
+  workflow_call:
+    inputs:
+      App:
+        type: string
+        required: true
+        description: "The name of the application"
+      Env:
+        type: string
+        required: true
+        description: "The name of the environment"
+      Timeout:
+        type: string
+        required: true
+        description: "The command timeout in seconds"
+      Command:
+        type: string
+        required: true
+        description: "The command to run"
+      Region:
+        type: string
+        required: true
+        description: "The AWS region to target"
+    secrets:
+      DEPLOYMENT_AWS_ROLE_ARN:
+        required: true
+        description: "The ARN for the AWS IAM role configured for use with GitHub Deployments."
+      DEPLOYMENT_REPOSITORY:
+        required: true
+        description: "The GitHub repository containing Elastic Beanstalk environment definitions."
+      DEPLOYMENT_REPOSITORY_KEY:
+        required: true
+        description: "The access key for the respository defined by DEPLOYMENT_REPOSITORY."
+
+permissions:
+  id-token: write # required to use AWS OIDC auth
+
+env:
+  APP: ${{ inputs.App }}
+  ENV: ${{ inputs.Env }}
+  TIMEOUT: ${{ inputs.Timeout }}
+  COMMAND: ${{ inputs.Command }}
+  REGION: ${{ inputs.Region }}
+
+jobs:
+
+  set_region:
+    runs-on: ubuntu-latest
+    steps:
+      - id: set-matrix
+        run: |
+          if [[ "${{ inputs.Region }}" == 'all' ]] ; then
+            echo ::set-output name=region_matrix::[\"us-west-1\", \"ca-central-1\"]
+          else
+            echo ::set-output name=region_matrix::[\"${{ inputs.Region }}\"]
+          fi
+    outputs:
+      region_matrix: ${{ steps.set-matrix.outputs.region_matrix }}
+
+  execute:
+    needs: set_region
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        region: ${{ fromJson(needs.set_region.outputs.region_matrix) }}
+    steps:
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
+        role-duration-seconds: 900
+        aws-region: us-west-1
+    - name: Checkout deployment repo
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
+        ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
+    - name: Prepare environment
+      run: pip install boto3 pyaml
+    - name: execute command
+      run: ./bin/eb-task-run "$APP" "$ENV" "$TIMEOUT" "$COMMAND" "${{ matrix.region }}"
