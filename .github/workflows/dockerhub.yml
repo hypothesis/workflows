@@ -17,6 +17,10 @@ on:
       DEPLOYMENT_DOCKER_USER_KEY:
         required: true
         description: "The access key for the user defined by DEPLOYMENT_DOCKER_USER"
+    outputs:
+      docker_tag:
+        description: "The tag (version number) of the image that was published to Docker Hub."
+        value: ${{ jobs.DockerHub.outputs.docker_tag }}
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
@@ -26,9 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       name: ${{ inputs.Application }}
+    outputs:
+      docker_tag: ${{ steps.build.outputs.docker_tag }}
     steps:
       - uses: actions/checkout@v3
       - name: build
+        id: build
         run: |
           GIT_SHORT=$(git rev-parse --short HEAD)
           GIT_COMMIT_TIMESTAMP=$(git --no-pager show -s --format=%ct $GIT_SHORT)
@@ -36,6 +43,7 @@ jobs:
           VERSION=$(echo "$GIT_TS_CONVERTED-g$GIT_SHORT")
           export TAG=${VERSION//+/-}
           echo "::set-env name=TAG::$TAG"
+          echo "docker_tag=${TAG}" >> $GITHUB_OUTPUT
           git archive HEAD | docker build -t "hypothesis/${name}:${TAG}" -
       - name: push
         run: |
