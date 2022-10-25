@@ -1,0 +1,69 @@
+# Deploy the caller repo's Docker image (from Docker Hub) to Elastic Beanstalk.
+name: Deploy
+permissions:
+  id-token: write  # Required to use AWS OIDC auth.
+on:
+  workflow_call:
+    inputs:
+      github_environment_name:
+        type: string
+        description: "The GitHub environment name to reference, e.g. 'qa' or 'prod'"
+      github_environment_url:
+        type: string
+        description: "The GitHub environment URL to reference, e.g. 'https://qa-lms.hypothes.is/'"
+      aws_region:
+        type: string
+        required: true
+        description: "The AWS region to deploy to, e.g. 'us-west-1' or 'ca-central-1'"
+      elasticbeanstalk_application:
+        type: string
+        required: true
+        description: "The Elastic Beanstalk application to deploy to, e.g. 'via' or 'lms'"
+      elasticbeanstalk_environment:
+        type: string
+        required: true
+        description: "The Elastic Beanstalk environment to deploy to, e.g. 'qa' or 'prod'"
+      docker_tag:
+        type: string
+        description: "The Docker tag to deploy, e.g. '20221019-g8a52aea'"
+      operation:
+        type: string
+        required: true
+        description: "The operation to perform: `deploy` to deploy the given `docker_tag`; `redeploy` to re-deploy the current version of the app; or `sync-env` to synchronize the Elastic Beanstalk environment definition"
+    secrets:
+      DEPLOYMENT_AWS_ROLE_ARN:
+        required: true
+        description: "The ARN for the AWS IAM role configured for use with GitHub Deployments"
+      DEPLOYMENT_REPOSITORY:
+        required: true
+        description: "The GitHub repository containing Elastic Beanstalk environment definitions"
+      DEPLOYMENT_REPOSITORY_KEY:
+        required: true
+        description: "The access key for the respository defined by DEPLOYMENT_REPOSITORY"
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.github_environment_name }}
+      url: ${{ inputs.github_environment_url }}
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
+        role-duration-seconds: 900
+        aws-region: us-west-1
+    - name: Checkout deployment repo
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
+        ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
+    - run: pip install boto3 pyaml
+    - name: Run deploy script
+      run: ./bin/init.sh
+      env:
+        APP: ${{ inputs.elasticbeanstalk_application }}
+        TYPE: ${{ inputs.operation }}
+        APP_DOCKER_VERSION: ${{ inputs.docker_tag }}
+        ENV: ${{ inputs.elasticbeanstalk_environment }}
+        REGION: ${{ inputs.aws_region }}
