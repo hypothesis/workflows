@@ -73,7 +73,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
-        role-duration-seconds: 900
+        role-duration-seconds: ${{ inputs.Timeout }}
         aws-region: us-west-1
     - name: Checkout deployment repo
       uses: actions/checkout@v3
