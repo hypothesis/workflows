@@ -42,7 +42,7 @@ on:
         description: "The access key for the respository defined by DEPLOYMENT_REPOSITORY"
 jobs:
   Deploy:
-    name: ${{ inputs.github_environment_url }}
+    name: ${{ inputs.github_environment_name }}
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.github_environment_name }}
