@@ -1,7 +1,7 @@
 # Build, then push a Docker container to DockerHub
 #
 # Called as part of the application release process.
-name: DockerHub
+name: Release
 
 on:
   workflow_call:
@@ -20,13 +20,13 @@ on:
     outputs:
       docker_tag:
         description: "The tag (version number) of the image that was published to Docker Hub."
-        value: ${{ jobs.DockerHub.outputs.docker_tag }}
+        value: ${{ jobs.Release.outputs.docker_tag }}
 
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
-  DockerHub:
+  Release:
     runs-on: ubuntu-latest
     env:
       name: ${{ inputs.Application }}
