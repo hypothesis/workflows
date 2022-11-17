@@ -49,5 +49,3 @@ jobs:
         run: |
           echo "${{ secrets.DEPLOYMENT_DOCKER_USER_KEY }}" | docker login -u "${{ secrets.DEPLOYMENT_DOCKER_USER }}"  --password-stdin
           docker push "hypothesis/${name}:${TAG}"
-          docker tag "hypothesis/${name}:${TAG}" "hypothesis/${name}:latest"
-          docker push "hypothesis/${name}:latest"
