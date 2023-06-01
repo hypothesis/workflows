@@ -70,7 +70,7 @@ jobs:
         region: ${{ fromJson(needs.set_region.outputs.region_matrix) }}
     steps:
     - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v2.1.0
       with:
         role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
         role-duration-seconds: ${{ inputs.Timeout }}
