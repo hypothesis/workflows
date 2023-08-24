@@ -48,7 +48,7 @@ jobs:
       url: ${{ inputs.github_environment_url }}
     steps:
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v3.0.0
       with:
         role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
         role-duration-seconds: 900
