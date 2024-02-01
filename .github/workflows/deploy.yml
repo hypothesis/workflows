@@ -48,13 +48,13 @@ jobs:
       url: ${{ inputs.github_environment_url }}
     steps:
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
         role-duration-seconds: 900
         aws-region: us-west-1
     - name: Checkout deployment repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
