@@ -70,13 +70,13 @@ jobs:
         region: ${{ fromJson(needs.set_region.outputs.region_matrix) }}
     steps:
     - name: configure aws credentials
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.DEPLOYMENT_AWS_ROLE_ARN }}
         role-duration-seconds: ${{ inputs.Timeout }}
         aws-region: us-west-1
     - name: Checkout deployment repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
