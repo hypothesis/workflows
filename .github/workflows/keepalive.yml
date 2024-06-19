@@ -22,11 +22,6 @@
 name: Keepalive
 on:
   workflow_call:
-    inputs:
-      workflow:
-        description: "The ID or name of the scheduled workflow to keep alive, for example: 'ci.yml'"
-        required: true
-        type: string
 jobs:
   Keepalive:
     runs-on: ubuntu-latest
