@@ -22,9 +22,6 @@
 name: Keepalive
 on:
   workflow_call:
-    secrets:
-      PYPI_TOKEN:
-        required: true
 jobs:
   Keepalive:
     runs-on: ubuntu-latest
