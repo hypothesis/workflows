@@ -34,4 +34,4 @@ jobs:
       - name: Keepalive
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-        run: gh workflow enable --repo '${{ github.repository }}' '${{ inputs.workflow }}'
+        run: gh workflow enable --repo '${{ github.repository }}' '${{ github.event.workflow.path }}'
