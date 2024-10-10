@@ -58,12 +58,11 @@ jobs:
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
-    - run: |
-        python -m venv .venv
-        .venv/bin/pip install boto3 pyaml
-    - name: Run deploy script
+    - name: Install dependencies and run deploy script
       run: |
+        python -m venv .venv
         source .venv/bin/activate
+        pip install boto3 pyaml
         ./bin/init.sh
       env:
         APP: ${{ inputs.elasticbeanstalk_application }}
