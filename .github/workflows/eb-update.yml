@@ -61,7 +61,9 @@ jobs:
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
-    - name: Prepare environment
-      run: pip install boto3 pyaml
     - name: ${{ inputs.Application }} - ${{ inputs.Environment }} - ${{ inputs.Region }} - ${{ inputs.Operation }}
-      run: ./bin/init.sh
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install boto3 pyaml
+        ./bin/init.sh

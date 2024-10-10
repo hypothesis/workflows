@@ -80,7 +80,9 @@ jobs:
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
-    - name: Prepare environment
-      run: pip install boto3 pyaml
-    - name: execute command
-      run: ./bin/eb-task-run "$APP" "$ENV" "$TIMEOUT" "$COMMAND" "${{ matrix.region }}"
+    - name: Install dependencies and execute command
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        pip install boto3 pyaml
+        ./bin/eb-task-run "$APP" "$ENV" "$TIMEOUT" "$COMMAND" "${{ matrix.region }}"
