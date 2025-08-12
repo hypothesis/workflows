@@ -76,7 +76,7 @@ jobs:
         role-duration-seconds: ${{ inputs.Timeout }}
         aws-region: us-west-1
     - name: Checkout deployment repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         repository: ${{ secrets.DEPLOYMENT_REPOSITORY }}
         ssh-key: ${{ secrets.DEPLOYMENT_REPOSITORY_KEY }}
