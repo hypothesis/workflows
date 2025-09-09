@@ -1,0 +1,21 @@
+# Post a message into Slack.
+name: Post to Slack
+on:
+  workflow_call:
+    inputs:
+      payload:
+        type: string
+        required: true
+    secrets:
+      SLACK_BOT_TOKEN:
+        required: true
+jobs:
+  Slack:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Post to Slack
+      uses: slackapi/slack-github-action@v2.1.1
+      with:
+        method: chat.postMessage
+        token: ${{ secrets.SLACK_BOT_TOKEN }}
+        payload: ${{ inputs.payload }}
