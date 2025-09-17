@@ -1,4 +1,27 @@
 # Post a message into Slack.
+#
+# Usage:
+#
+#    jobs:
+#      Slack:
+#        uses: hypothesis/workflows/.github/workflows/slack.yml@main
+#        with:
+#          payload: |
+#            channel: "<SLACK_CHANNEL_NAME_OR_ID>"
+#            markdown_text: "<MARKDOWN_TEXT>"
+#        secrets: inherit
+#
+# Variables from GitHub Actions contexts can be used in markdown_text, for example:
+#
+#   markdown_text: "Link to workflow run: ${{ github.event.workflow_run.html_url }}"
+#
+# For full documentation of the available GitHub Actions context variables see:
+#
+# https://docs.github.com/en/actions/reference/workflows-and-actions/contexts
+#
+# For the full list of arguments that can be passed to Slack in `payload` see:
+#
+# https://docs.slack.dev/reference/methods/chat.postMessage/
 name: Post to Slack
 on:
   workflow_call:
