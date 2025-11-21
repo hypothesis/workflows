@@ -33,7 +33,7 @@ jobs:
     outputs:
       docker_tag: ${{ steps.build.outputs.docker_tag }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: build
         id: build
         run: |
